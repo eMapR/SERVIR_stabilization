@@ -28,8 +28,10 @@ The second script, temporal_stabilization_from_ltop.js is the primary script to 
 
 6. If you would like to generate an imageCollection from the directory of assets you can use something like: 
 
-`var yr_images = []; 
-for (var y = 1990;y < 2022; y++){
-  var im = ee.Image("projects/servir-mekong/composites/" + y.toString()); 
-  yr_images.push(im); 
-}`
+`
+    var yr_images = []; 
+    for (var y = 1990;y < 2022; y++){
+      var im = ee.Image("projects/servir-mekong/composites/" + y.toString()); 
+      yr_images.push(im); 
+    }
+`
