@@ -11,23 +11,22 @@
 // website: https://github.com/eMapR/LT-GEE
 // This script requires some user-defined params as well as outputs of the LTOP LandTrendr process. 
 // 1. cluster_image - this is the output of the kmeans algorithm (LTOP 02)
-// 2. ltop_output - this is the final output of LTOP, a multiband image with the LandTrendr vertex breakpoints (LTOP 05)
+// 2. ltop_output - this is the final output of LTOP, a multiband image with the LandTrendr vertex breakpoints
 // 3. table - these are the selected versions of LandTrendr that are used in the LTOP generation process 
 // 4. dest_folder - this should be created and set by the user. This will be where the stabilized composites end up. Do not add a slash, its done for you below
-///////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////// 
 ////////////////////User params////////////////////////////
 ///////////////////////////////////////////////////////////
 
 //import modules
-var ltgee = require('users/emaprlab/public:Modules/LandTrendr.js');
-var ftv_prep = require('users/emaprlab/broberts:servir_composites/FTV_post_processing_modules.js'); 
-var ltop = require('users/emaprlab/public:Modules/LTOP_modules.js'); 
+var ftv_prep = require('users/ak_glaciers/adpc_servir:modules/temp_stab_modules.js'); 
+var ltgee = require('users/ak_glaciers/adpc_servir_LTOP:modules/LandTrendr.js'); 
+var params = require('users/ak_glaciers/adpc_servir_LTOP:modules/params.js'); 
 
 
 //get the necessary inputs from LTOP process
 var cluster_image = ee.Image("users/ak_glaciers/LTOP_snic_seed_points75k_kmeans_servir_basin_c2_comps"); 
 var ltop_output = ee.Image('users/ak_glaciers/Optimized_LT_1990_start_servir_basin_comps_corrected'); 
-//this should be the table of selected LT params you used in the 05 LTOP step
 var table = ee.FeatureCollection("users/ak_glaciers/LTOP_servir_basin_comps_kmeans_pts_config_selected_for_GEE_upload_new_weights_full");
 
 //user params
@@ -38,14 +37,14 @@ var place = 'servir_basin_comps';
 var min_obvs = 11;  
 var dest_folder = "stabilized_servir_composites"; 
 
-//build imageCollection of SERVIR composites - this we should be able to do away with? 
+//build imageCollection of SERVIR composites 
 var servir_ic = ltop.buildSERVIRcompsIC(startYear,endYear); 
 
 servir_ic = servir_ic.filterBounds(aoi); 
 //get a list of all the servir bands
 var band_names = servir_ic.first().bandNames(); 
-var num_bands = band_names.size()
-print(num_bands.subtract(1))
+var num_bands = band_names.size(); 
+print(num_bands.subtract(1)); 
 ///////////////////////////////////////////////////////////
 ////////////////////Bring in the LTOP outputs//////////////
 ///////////////////////////////////////////////////////////
@@ -105,7 +104,6 @@ var newCollection = dayCounter.map(function(b){
 }; 
 
 ///////////////////////////////////////////////////////////
-//there should really be a better way to do this section 
 //initialize an empty container for the imageCollections 
 var collections = []; 
 
@@ -149,7 +147,6 @@ output = output.sort('year');
 //export
 for (var i = startYear; i <= endYear; ++i){
   var out_img = output.filter(ee.Filter.eq('year',i)).first().clip(aoi);
-  // var test_str = ee.Number(i).format().getInfo()
   var yr_str = ee.Number(i).format().getInfo(); 
   
   Export.image.toAsset({
