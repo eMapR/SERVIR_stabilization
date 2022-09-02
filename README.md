@@ -1,15 +1,17 @@
 # SERVIR Temporal stabilization
 
-This is a step by step guide to the process of generating temporally stabilized imagery using the [LandTrendr algorithm](https://emapr.github.io/LT-GEE/landtrendr.html). This workflow is set up specifically for temporal composites that were created by the NASA SERVIR group from the Mekong hub, however, the general workflow could be applied to base medoid composites or other temporal composites from other areas. Note also that similar outputs can be generated directly from LandTrendr outputs and are default produced as FTV or Fit bands (from GEE LandTrendr Fit) when running either of those versions of the LandTrendr algorithm. This particular version of the temporal stabilization also relies on the LandTrendr Optimization workflow (LTOP) which is available on GitHub [here](https://github.com/eMapR/LTOP_FTV). This workflow and assoicated scripts are also available via GitHub [here](https://github.com/eMapR/SERVIR_stabilization). 
+This is a step by step guide to the process of generating temporally stabilized imagery using the [LandTrendr algorithm](https://emapr.github.io/LT-GEE/landtrendr.html). This workflow is set up specifically for temporal composites that were created by the NASA SERVIR group from the Mekong hub, however, the general workflow could be applied to base medoid composites or other temporal composites from other areas. Note also that similar outputs can be generated directly from LandTrendr outputs and are default produced as FTV or Fit bands (from GEE LandTrendr Fit) when running either of those versions of the LandTrendr algorithm. This particular version of the temporal stabilization also relies on the LandTrendr Optimization workflow (LTOP) which is available on GitHub [here](https://github.com/eMapR/LTOP_FTV). This workflow and assoicated scripts are also available via [GitHub](https://github.com/eMapR/SERVIR_stabilization). 
 
-The theory here is basically to take LandTrendr breakpoint/vertex years and use the associated regression lines to impose or adjust spectral values of the input composite time series to each segment of the LandTrendr-derived regression lines. This results in a time series of temporally stabilized images with adjusted spectral values. The process also has the benefit of interpolating some of the missing values in the time series and can have a positive impact on the SLC-off error that is frequently encountered when working with imagery from Landsat 7 in the years between 2003 and 2012. The process does not always improve this artifact but has been shown to have positive impacts in some areas. 
+The theory here is basically to take LandTrendr breakpoint/vertex years and use the associated regression lines to impose or adjust spectral values of the input composite time series to each segment of the LandTrendr-derived regression lines. This results in a time series of temporally stabilized images with adjusted spectral values. The process also has the benefit of interpolating some of the missing values in the time series and can have a positive impact on the SLC-off error that is frequently encountered when working with imagery from Landsat 7 in the years between 2003 and 2012. The process does not always improve this artifact but has been shown to have positive impacts in some areas. Some additional information on this process is available in the associated [Google Slides](https://docs.google.com/presentation/d/1Mq0EgHAk1xWGNrel7UWlOx0mOX2trCCfbFJFxBckJe8/edit?usp=sharing)
+
+This set of scripts can also be cloned into a local directory or scripts can be copy and pasted directly from GitHub.  
 
 IMAGE
 
-1. The first step is to take the outputs of the LTOP workflow and using those with the input time series (in this case SERVIR composites), run LandTrendr Fit to generate temporally stabilized values. To run this you need some of the items created with the LTOP workflow. 
+1. The first step is to take the outputs of the LTOP workflow and using those with the input time series (in this case SERVIR composites), run LandTrendr Fit to generate temporally stabilized values. To run this you need some of the items created with the LTOP workflow. Description of what these things are, the step in the LTOP workflow where they are derived and some of their derivation logic are all outlined [here](https://github.com/eMapR/LTOP_FTV/blob/master/documentation/LTOP_in_GEE.md)
 
 - cluster_image - this is the output of the kmeans algorithm used to spatially constrain the different versions of LandTrendr used in the LTOP process. This is the second step in the LTOP workflow. 
-- ltop_output - this is a multiband image with one band up to the maxObvs param used in the running of LandTrendr. Each band contains LandTrendr breakpoint/vertex years. This is the final output of the LTOP workflow (LTOP 05). 
+- ltop_output - this is a multiband image with one band up to the maxObvs param used in the running of LandTrendr. Each band contains LandTrendr breakpoint/vertex years. This is the final output of the LTOP workflow (step 13). 
 - table - these are the versions of LandTrendr that were selected based on the weighted scoring scheme that is implemented between LTOP step 04 and 05. 
 
 2. Fill in these data sources, they should all be assets contained (ideally) in a single folder for a particular run of LTOP. If you are having somebody else run this, make sure that all of the assets are set to public. 
@@ -26,7 +28,7 @@ The second script, temporal_stabilization_from_ltop.js is the primary script to 
 
 5. Start the tasks. Go to the Tasks tab and click run on each of the jobs that is generated by the running of this script. 
 
-6. If you would like to generate an imageCollection from the directory of assets you can use something like below. 
+6. If you would like to generate an imageCollection from the directory of assets you can use something like below in a separate script. 
 
 Code example: 
 
